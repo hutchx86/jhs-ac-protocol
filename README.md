@@ -6,7 +6,6 @@ So far I haven't been able to send commands to the AC, there must be some sort o
 
 This is the general layout of UART messages sent from the AC over the serial bus:
 
-------------------------
 | Byte | Function/Notes
 |------|------------------------------------------------------|
 | 0    | Start byte (always 0xA5 in captures)                 |
