@@ -52,6 +52,3 @@ JHS AC UART Protocol
 --------------
 - The protocol is not Tuya-compatible at the UART level; Tasmota's TuyaMCU integration does not work.
 - No public documentation found for this 18-byte protocol.
-
-
-(Last updated: May 27, 2025)
