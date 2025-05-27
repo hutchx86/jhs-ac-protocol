@@ -11,7 +11,7 @@ This is the general layout of UART messages sent from the AC over the serial bus
 | 0    | Start byte (always 0xA5 in captures)                 |
 | 1    | (always 0x00)                                        |
 | 2    | (always 0x0D)                                        |
-| 3    | Power/Mode group (0x01=on, 0x00=off, 0x02=dehum, etc)|
+| 3    | Power mode (0x01=on, 0x00=off)                       |
 | 4    | Mode (0x01=cool, 0x02=dehum, 0x03=fan)               |
 | 5    | Sleep (0x01=sleep, 0x00=normal)                      |
 | 6    | Ambient temperature (matches display, C or F)        |
