@@ -24,5 +24,7 @@ This is the general layout of UART messages sent from the AC over the serial bus
 | 16   | Checksum (sum bytes 1–15, mod 256)                   |
 | 17   | End byte (always 0xF5 in captures)                   |
 
+For celsius, the ambient temperature and set temperature values start at 10. For the set temperature, 10 = 16°C, and increases with the temperature, i.e. 11 = 17°C, 12 = 13°C, etc. These are hex values.
+
 I've made a little jig to connect to AC to an ESP32 flashed with Tasmota. All command attempts were made with SerialSend5. Used a logic level shifter as the AC UART is 5v.
 
