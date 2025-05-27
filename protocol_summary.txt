@@ -41,6 +41,8 @@ JHS AC UART Protocol
 - Start and end bytes are always A5 and F5 in all captures.
 - Bytes (1, 2, 8, 10–13) are always 0x00 in all captures so far
 - Checksum is always sum of bytes 1–15, modulo 256.
+- For celsius, the ambient temperature and set temperature values start at 10. For the set temperature, 10 = 16°C, and increases with the temperature, i.e. 11 = 17°C, 12 = 13°C, etc. These are hex values.
+
 
 
 5. Command Attempts
