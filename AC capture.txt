@@ -1,0 +1,53 @@
+This is with the target temperature at 20 degrees Celsius, low fan mode, cool mode: "A5000D0101011210000100000000200053F5"
+This is with the target temperature at 20 degrees Celsius, high fan mode, cool mode: "A5000D0101001114000300000000200057F5"
+
+For the following cool mode values, ambient temperature was varying between 19 and 20 degrees celsius.
+
+cool mode, low fan, target temp set at 16: "A5000D0101001410000100000000200054F5"
+cool mode, low fan, target temp set at 17: "A5000D0101001411000100000000200055F5"
+cool mode, low fan, target temp set at 18: "A5000D0101001412000100000000200056F5"
+cool mode, low fan, target temp set at 19: "A5000D0101001413000100000000200057F5"
+cool mode, low fan, target temp set at 20: "A5000D0101001414000100000000200058F5"
+cool mode, low fan, target temp set at 21: "A5000D0101001415000100000000200059F5"
+cool mode, low fan, target temp set at 22: "A5000D010100141600010000000020005AF5"
+
+cool mode, high fan, target temp set at 20: "A5000D010100141400030000000020005AF5"
+cool mode, high fan, target temp set at 21: "A5000D010100141500030000000020005BF5"
+cool mode, high fan, target temp set at 22: "A5000D010100131600030000000020005BF5"
+
+Knowing that the ambient temperature was varying between 19 and 20 Celsius, we can infer which byte is the ambient temperature.
+
+
+Dhumidify mode does not let me change the target temperature, or the fan mode. Presumably does offsets can be ignored while analysing dehumidify mode
+
+deuhumidify, low fan, target temp was set to 20 from previous test: A5000D0102001314000100000000200058F5
+
+Off, previous mode was dehumidify: A5000D0002001414000100000000200058F5
+
+This is with the device off. The Display reads 17 degrees ambient temperature: "A5000D0001001114000300000000200056F5"
+This is with the device off. Display reads 18 degrees Celsius ambient temperature: "A5000D000100121A00030000000020005DF5"
+This is with the device off. Display reads 19 degrees Celsius ambient temperature: "A5000D000100131A00030000000020005EF5"
+This is with the device off. Display reads 20 degrees Celsius ambient temperature: "A5000D000100141A00030000000020005FF5"
+This is with the device off. The timer is set to turn the device on in one minute: "A5000D0001001214000300000000200057F5"
+
+This is with the device off. Ambient temperature is presumably at the same offset. Water Tank full sensor NOT triggered: "A5000D000100151600010000000020005AF5"
+This is with the device off. Ambient temperature is presumably at the same offset. Water Tank full sensor is triggered: "A5000D000100151600010000000020035DF5"
+I've also set the device to fahrenheit, to capture some.
+
+This is off, display reading 65 Fahrenheit: "A5000D000100C1CF0003000000002400C5F5"
+This is off, display reading 66 Fahrenheit: "A5000D000100C2CF0003000000002400C6F5"
+
+-> note how it is identical to without the timer. 
+
+
+This is set to dehumidify. I get no demperature settings, no fan settings possible: "A5000D0102001210000100000000200053F5"
+
+This is in Fan mode. I can not set temperature. This is low fan mode: "A5000D0103001210000100000000200054F5"
+This is in Fan mode. I can not set temperature. This is high fan mode: "A5000D0103001210000300000000200056F5"
+
+This is in Fan mode. I can not set temperature. This is high fan mode, with the timer set to 1 hour: "A5000D0103001210000300000000200056F5"
+This is in Fan mode. I can not set temperature. This is high fan mode, with the timer set to 2 hours: "A5000D0103001210000300000000200056F5"
+
+
+
+Checksum is calculated based on Bytes 1 through 15 inclusive. Start and End byte are NOT included for the checksum.

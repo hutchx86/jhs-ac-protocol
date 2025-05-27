@@ -1,0 +1,57 @@
+JHS AC UART Protocol
+====================
+
+1. Message Structure ("Heartbeat" Messages)
+-------------------------------------------
+- Each message is 18 bytes (36 hex characters).
+- Format: [Start][Body][Checksum][End]
+  - Start byte:        0xA5
+  - End byte:          0xF5
+  - Checksum:          Byte 16 (sum of bytes 1–15, modulo 256)
+  - Checksum does NOT include start or end byte.
+
+2. Byte Layout (0-based)
+------------------------
+| Byte | Function/Notes
+|------|------------------------------------------------------|
+| 0    | Start byte (always 0xA5 in captures)                 |
+| 1    | (always 0x00)                                        |
+| 2    | (always 0x0D)                                        |
+| 3    | Power/Mode group (0x01=on, 0x00=off, 0x02=dehum, etc)|
+| 4    | Mode (0x01=cool, 0x02=dehum, 0x03=fan)               |
+| 5    | Sleep (0x01=sleep, 0x00=normal)                      |
+| 6    | Ambient temperature (matches display, C or F)        |
+| 7    | Set temperature (user setting or last set)           |
+| 8    | Control/protocol (always 0x00)                       |
+| 9    | Fan (0x01=low, 0x03=high)                            |
+| 10-13| (always 0x00)                                        | 
+| 14   | Unit/region (0x20=Celsius, 0x24=Fahrenheit)          |
+| 15   | Water tank (0x00=ok, 0x03=full)                      |
+| 16   | Checksum (sum bytes 1–15, mod 256)                   |
+| 17   | End byte (always 0xF5 in captures)                   |
+
+3. Heartbeat Messages
+---------------------
+- Sent automatically by the AC every few seconds.
+- Report current state: mode, power, fan, ambient temp, set temp, water tank, etc.
+- All captured messages so far are heartbeats; no confirmed command messages, as I don't have the accompagnying Wifi Module to capture any
+
+4. Protocol Observations
+------------------------
+- Start and end bytes are always A5 and F5 in all captures.
+- Bytes (1, 2, 8, 10–13) are always 0x00 in all captures so far
+- Checksum is always sum of bytes 1–15, modulo 256.
+
+
+5. Command Attempts
+-------------------
+- Sending heartbeat messages back to the AC (with or without modifications) doesn't work
+- Brute-forcing control bytes, start/end bytes, didn't get any results either
+
+6. Other Notes
+--------------
+- The protocol is not Tuya-compatible at the UART level; Tasmota's TuyaMCU integration does not work.
+- No public documentation found for this 18-byte protocol.
+
+
+(Last updated: May 27, 2025)
