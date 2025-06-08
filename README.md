@@ -4,6 +4,8 @@ Results from capturing and analysing the UART protocol used on the internal UART
 
 So far I haven't been able to send commands to the AC, there must be some sort of control byte I need to set.
 
+For now I've solved this with a custom Home Assistant integration which reads the status message on the Tasmota device connected to the AC, decodes them, and uses the info for the thermostat in the UI, and a second Tasmota device which is an IR blaster which sends the according amounts of IR controll packets to change the temperature, or do any other action. I.e. if the AC-Tasmota device reports "Target temp at 20 Degrees Celsius", Home assistant will reflect this, and if I change the temp in HA to let's say, 16 degrees celsius, Home Assistant will send 4 Temp Down commands through the IR Blaster.
+
 This is the general layout of UART messages sent from the AC over the serial bus:
 
 | Byte | Function/Notes
