@@ -49,20 +49,20 @@ Fan speed:          0x16
 To interact with these functions, bytes 3 and 4 need to match each other. The following is a table of their possible values:
 
 | Function     | command
-|--------------|--------------------------------------------------------|
-| POWER CONTROL               | POWER COMMAND                           |
+|-----------------------------|-----------------------------------------|
+| POWER CONTROL                                                         |
 | Power off                   | 0x00                                    |
-| Power on                    |                                         |
-| MODE SETTING                | MODE COMMAND                            |
+| Power on                    | 0x01                                    |
+| MODE SETTING                |                                         |
 | Mode Cool                   | 0x01                                    |
 | Mode Dehumidify             | 0x02                                    |
 | Mode Fan                    | 0x03                                    |
-| SLEEP SETTING               | SLEEP COMMAND                           |
+| SLEEP SETTING                                                         |
 | Sleep off                   | 0x00                                    |
 | Sleep on                    | 0x01                                    |
-| TEMPERATURE SETTING         |                                         |
+| TEMPERATURE SETTING                                                   |
 | desired temp in hex         | example 0x16 (will set the temp to 22°) |
-| FAN SPEED CONTROL           | FAN SPEED                               |
+| FAN SPEED CONTROL                                                     |
 | Fan low                     | 0x01                                    |
 | Fan high                    | 0x03                                    |
 
