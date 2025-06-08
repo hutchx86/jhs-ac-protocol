@@ -48,7 +48,7 @@ Fan speed:          0x16
 
 To interact with these functions, bytes 3 and 4 need to match each other. The following is a table of their possible values:
 
-| Function     | command
+| Function                    | Command                                 |
 |-----------------------------|-----------------------------------------|
 | POWER CONTROL                                                         |
 | Power off                   | 0x00                                    |
