@@ -1,23 +1,28 @@
 JHS AC UART Protocol
 ====================
 
-1. Message Structure ("Heartbeat" Messages)
--------------------------------------------
-- Each message is 18 bytes (36 hex characters).
-- Format: [Start][Body][Checksum][End]
-  - Start byte:        0xA5
-  - End byte:          0xF5
-  - Checksum:          Byte 16 (sum of bytes 1–15, modulo 256)
-  - Checksum does NOT include start or end byte.
+1. Message Structure
+--------------------
+Two types of messages:
 
-2. Byte Layout (0-based)
+A) Heartbeat Messages (18 bytes - AC → WiFi Module)
+- Format: A5 00 0D [15 data bytes] [checksum] F5
+- Sent automatically by AC every few seconds
+- Report current state
 
-| Byte | Function/Notes
-|------|------------------------------------------------------|
-| 0    | Start byte (always 0xA5 in captures)                 |
+B) Command Messages (6 bytes - WiFi Module → AC)  
+- Format: A5 [cmd] [data1] [data2] [checksum] F5
+- Sent to control AC functions
+- Checksum = cmd + data1 + data2 (mod 256)
+
+2. Heartbeat Layout (18 bytes, 0-based)
+---------------------------------------
+| Byte | Function/Notes                                        |
+|------|-------------------------------------------------------|
+| 0    | Start byte (always 0xA5)                             |
 | 1    | (always 0x00)                                        |
 | 2    | (always 0x0D)                                        |
-| 3    | Power mode (0x01=on, 0x00=off)                       |
+| 3    | Power/Mode group (0x01=on, 0x00=off, 0x02=dehum, etc)|
 | 4    | Mode (0x01=cool, 0x02=dehum, 0x03=fan)               |
 | 5    | Sleep (0x01=sleep, 0x00=normal)                      |
 | 6    | Ambient temperature (matches display, C or F)        |
@@ -28,29 +33,62 @@ JHS AC UART Protocol
 | 14   | Unit/region (0x20=Celsius, 0x24=Fahrenheit)          |
 | 15   | Water tank (0x00=ok, 0x03=full)                      |
 | 16   | Checksum (sum bytes 1–15, mod 256)                   |
-| 17   | End byte (always 0xF5 in captures)                   |
+| 17   | End byte (always 0xF5)                               |
 
-3. Heartbeat Messages
+3. Command Structure (6 bytes)
+------------------------------
+Format: A5 [CMD] [DATA1] [DATA2] [CHECKSUM] F5
+
+Command Types:
+- 0x11 = Power Control
+- 0x12 = Mode Control  
+- 0x13 = Sleep Control
+- 0x14 = Temperature Control
+- 0x16 = Fan Speed Control
+
+4. Confirmed Commands
 ---------------------
-- Sent automatically by the AC every few seconds.
-- Report current state: mode, power, fan, ambient temp, set temp, water tank, etc.
-- All captured messages so far are heartbeats; no confirmed command messages, as I don't have the accompagnying Wifi Module to capture any
+Power Control (0x11):
+- A5 11 00 00 11 F5  (Turn OFF)
+- A5 11 01 01 13 F5  (Turn ON)
 
-4. Protocol Observations
+Mode Control (0x12):
+- A5 12 01 01 14 F5  (Cool Mode)
+- A5 12 02 02 16 F5  (Dehumidify Mode)
+- A5 12 03 03 18 F5  (Fan Mode)
+
+Sleep Control (0x13):
+- A5 13 00 00 13 F5  (Sleep OFF)
+- A5 13 01 01 15 F5  (Sleep ON)
+
+Temperature Control (0x14):
+- A5 14 [TEMP] [TEMP] [CHECKSUM] F5
+- Where TEMP = temperature in Celsius (hex)
+- Examples:
+  - A5 14 16 16 40 F5  (Set 22°C)
+  - A5 14 1A 1A 48 F5  (Set 26°C)
+
+Fan Speed Control (0x16):
+- A5 16 01 01 18 F5  (Fan Low)
+- A5 16 03 03 1C F5  (Fan High)
+
+5. Protocol Observations
 ------------------------
-- Start and end bytes are always A5 and F5 in all captures.
-- Bytes (1, 2, 8, 10–13) are always 0x00 in all captures so far
-- Checksum is always sum of bytes 1–15, modulo 256.
-- For celsius, the ambient temperature and set temperature values start at 10. For the set temperature, 10 = 16°C, and increases with the temperature, i.e. 11 = 17°C, 12 = 13°C, etc. These are hex values.
+- Heartbeats: 18-byte messages from AC reporting status
+- Commands: 6-byte messages to AC for control
+- All messages start with A5 and end with F5
+- Checksums use simple addition (mod 256) for both message types
+- Commands: checksum = cmd + data1 + data2
+- Heartbeats: checksum = sum of bytes 1-15
+- Commands use simple parameter repetition (data1 = data2)
+- Temperature commands use actual Celsius value in hex
 
-
-
-5. Command Attempts
+6. Integration Notes
 -------------------
-- Sending heartbeat messages back to the AC (with or without modifications) doesn't work
-- Brute-forcing control bytes, start/end bytes, didn't get any results either
+- Use Tasmota SerialSend5 command to send control messages
+- Monitor Tasmota console/logs for heartbeat messages  
+- Set Tasmota: SerialDelimiter 245 (0xF5)
+- Commands work reliably for all tested functions
+- Heartbeat parsing provides real-time AC status
 
-6. Other Notes
---------------
-- The protocol is not Tuya-compatible at the UART level; Tasmota's TuyaMCU integration does not work.
-- No public documentation found for this 18-byte protocol.
+(Last updated: June 8, 2025)

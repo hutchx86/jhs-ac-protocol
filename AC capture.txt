@@ -51,3 +51,27 @@ This is in Fan mode. I can not set temperature. This is high fan mode, with the 
 
 
 Checksum is calculated based on Bytes 1 through 15 inclusive. Start and End byte are NOT included for the checksum.
+
+
+The following are Infrared commands captured via Tasmota:
+ IR power toggle: {"IrReceived":{"Protocol":"NEC","Bits":32,"Data":"0x1FE39C6","DataLSB":"0x807F9C63","Repeat":0}}
+ IR target temp up button: {"IrReceived":{"Protocol":"NEC","Bits":32,"Data":"0x1FE29D6","DataLSB":"0x807F946B","Repeat":0}}
+IR target temp down button: {"IrReceived":{"Protocol":"NEC","Bits":32,"Data":"0x1FEA956","DataLSB":"0x807F956A","Repeat":0}}
+IR fan speed toggle button: {"IrReceived":{"Protocol":"NEC","Bits":32,"Data":"0x1FE6996","DataLSB":"0x807F9669","Repeat":0}}
+IR AC mode toggle button (between dehumid, fan, cool): {"IrReceived":{"Protocol":"NEC","Bits":32,"Data":"0x1FEB946","DataLSB":"0x807F9D62","Repeat":0}}
+
+UART Commands found so far:
+
+Turn off: A511000011F5
+Turn on: A511010113F5
+
+Mode to cool: A512010114F5
+Mode to dehumidify: A512020216F5
+Mode to fan: A512030318F5
+
+Fan to low: A5 16 01 01 18 F5
+
+Fan to high: A5 16 03 03 1C F5
+
+Sleep mode off: A5 13 00 00 13 F5
+Sleep mode on: A5 13 01 01 15 F5
