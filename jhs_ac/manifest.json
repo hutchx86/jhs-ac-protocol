@@ -1,0 +1,10 @@
+{
+  "domain": "jhs_ac",
+  "name": "JHS Air Conditioner",
+  "documentation": "https://github.com/hutchx86/jhs_ac",
+  "dependencies": [],
+  "codeowners": ["@hutchx86"],
+  "requirements": [],
+  "config_flow": true,
+  "version": "1.0.0"
+}
