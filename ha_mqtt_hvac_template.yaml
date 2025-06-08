@@ -1,0 +1,165 @@
+mqtt:  
+  climate:
+    - name: "JHS Air Conditioner"
+      unique_id: "jhs_ac_climate"
+      
+      # Command topics (what HA sends to control the AC)
+      mode_command_topic: "cmnd/tasmota_XXXXXX/serialsend5"
+      temperature_command_topic: "cmnd/tasmota_XXXXXX/serialsend5" 
+      fan_mode_command_topic: "cmnd/tasmota_XXXXXX/serialsend5"
+      
+      # State topics (heartbeat data from AC)
+      current_temperature_topic: "stat/tasmota_XXXXXX/SERIAL"
+      mode_state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      temperature_state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      fan_mode_state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      action_topic: "stat/tasmota_XXXXXX/SERIAL"
+      
+      # Available modes
+      modes:
+        - "off"
+        - "cool"
+        - "dry" 
+        - "fan_only"
+      
+      fan_modes:
+        - "low"
+        - "high"
+      
+      # Temperature settings
+      min_temp: 16
+      max_temp: 30
+      temp_step: 1
+      temperature_unit: "C"
+      
+      # Value templates to parse heartbeat data
+      current_temperature_template: >
+        {% if value | length == 36 %}
+          {{ value[12:14] | int(base=16) }}
+        {% endif %}
+      
+      mode_state_template: >
+        {% if value | length == 36 %}
+          {% set power = value[6:8] | int(base=16) %}
+          {% set mode = value[8:10] | int(base=16) %}
+          {% if power == 0 %}off
+          {% elif mode == 1 %}cool
+          {% elif mode == 2 %}dry
+          {% elif mode == 3 %}fan_only
+          {% else %}off{% endif %}
+        {% endif %}
+      
+      temperature_state_template: >
+        {% if value | length == 36 %}
+          {{ value[14:16] | int(base=16) }}
+        {% endif %}
+      
+      fan_mode_state_template: >
+        {% if value | length == 36 %}
+          {% set fan = value[18:20] | int(base=16) %}
+          {% if fan == 1 %}low
+          {% elif fan == 3 %}high
+          {% else %}low{% endif %}
+        {% endif %}
+      
+      action_template: >
+        {% if value | length == 36 %}
+          {% set power = value[6:8] | int(base=16) %}
+          {% set mode = value[8:10] | int(base=16) %}
+          {% if power == 0 %}off
+          {% elif mode == 1 %}cooling
+          {% elif mode == 2 %}drying
+          {% elif mode == 3 %}fan
+          {% else %}idle{% endif %}
+        {% endif %}
+      
+      # Command templates to send both power and mode commands
+      mode_command_template: >
+        {% if value == 'off' %}A511000011F5
+        {% elif value == 'cool' %}A511010113F5 A512010114F5
+        {% elif value == 'dry' %}A511010113F5 A512020216F5
+        {% elif value == 'fan_only' %}A511010113F5 A512030318F5
+        {% endif %}
+      
+      temperature_command_template: >
+        {% set temp = value | int %}
+        {% set temp_hex = '%02X' | format(temp) %}
+        {% set checksum = (20 + temp + temp) % 256 %}
+        {% set checksum_hex = '%02X' | format(checksum) %}
+        A514{{ temp_hex }}{{ temp_hex }}{{ checksum_hex }}F5
+      
+      fan_mode_command_template: >
+        {% if value == 'low' %}A516010118F5
+        {% elif value == 'high' %}A51603031CF5
+        {% endif %}
+
+  # Sensors for extra data
+  sensor:
+    - name: "JHS AC Sleep Mode"
+      state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      value_template: >
+        {% if value | length == 36 %}
+          {% set sleep = value[10:12] | int(base=16) %}
+          {{ 'ON' if sleep == 1 else 'OFF' }}
+        {% endif %}
+    
+    - name: "JHS AC Water Tank"
+      state_topic: "stat/tasmota_XXXXXX/SERIAL" 
+      value_template: >
+        {% if value | length == 36 %}
+          {% set tank = value[30:32] | int(base=16) %}
+          {{ 'FULL' if tank == 3 else 'OK' }}
+        {% endif %}
+
+  switch:
+    - name: "JHS AC Mode Cool"
+      command_topic: "cmnd/tasmota_XXXXXX/serialsend5"
+      state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      payload_on: "A512010114F5"
+      payload_off: ""
+      state_on: "ON"
+      state_off: "OFF"
+      value_template: >
+        {% if value | length == 36 %}
+          {% set mode = value[8:10] | int(base=16) %}
+          {{ 'ON' if mode == 1 else 'OFF' }}
+        {% endif %}
+        
+    - name: "JHS AC Mode Dry"
+      command_topic: "cmnd/tasmota_XXXXXX/serialsend5"
+      state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      payload_on: "A512020216F5"
+      payload_off: ""
+      state_on: "ON"
+      state_off: "OFF"
+      value_template: >
+        {% if value | length == 36 %}
+          {% set mode = value[8:10] | int(base=16) %}
+          {{ 'ON' if mode == 2 else 'OFF' }}
+        {% endif %}
+        
+    - name: "JHS AC Mode Fan"
+      command_topic: "cmnd/tasmota_XXXXXX/serialsend5"
+      state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      payload_on: "A512030318F5"
+      payload_off: ""
+      state_on: "ON"
+      state_off: "OFF"
+      value_template: >
+        {% if value | length == 36 %}
+          {% set mode = value[8:10] | int(base=16) %}
+          {{ 'ON' if mode == 3 else 'OFF' }}
+        {% endif %}
+
+    - name: "JHS AC Sleep Mode"
+      command_topic: "cmnd/tasmota_XXXXXX/serialsend5"
+      state_topic: "stat/tasmota_XXXXXX/SERIAL"
+      payload_on: "A513010115F5"
+      payload_off: "A513000013F5"
+      state_on: "ON"
+      state_off: "OFF"
+      value_template: >
+        {% if value | length == 36 %}
+          {% set sleep = value[10:12] | int(base=16) %}
+          {{ 'ON' if sleep == 1 else 'OFF' }}
+        {% endif %}

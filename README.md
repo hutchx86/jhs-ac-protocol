@@ -24,6 +24,49 @@ This is the general layout of UART messages sent from the AC over the serial bus
 | 16   | Checksum (sum bytes 1–15, mod 256)                   |
 | 17   | End byte (always 0xF5 in captures)                   |
 
+
+To send control messages, I've since found out the following, with lots of trial and error, (also before I managed to update this, other people (shoutout to @Lollbrant and @wilkemeyer) have since experimenting and figured this out!)
+The following protocol definition can be used: 
+
+| Byte | Function/Notes
+|------|------------------------------------------------------|
+| 0    | Start byte (always 0xA5)                             |
+| 1    | function byte, varies based on function (see below)  |
+| 2    | setting, varies based on function (see below)        |
+| 3    | copy of setting byte                                 |
+| 4    | Checksum                                             |
+| 5    | End byte (always 0xF5)                               |
+
+
+I was able to figure out the following function bytes:
+
+Power:              0x11
+Mode:               0x12
+Sleep:              0x13
+Set temperature:    0x14
+Fan speed:          0x16
+
+To interact with these functions, bytes 3 and 4 need to match each other. The following is a table of their possible values:
+
+Power off:                  0x00
+Power on:                   0x01
+
+Mode: Cool:                 0x01
+      Dehumidify:           0x02
+      Fan:                  0x03
+
+For example, setting the AC to fan mode would need the following message: A5 12 03 03 18 F5
+
+Fan speed: Low:             0x01
+           High:            0x03
+
+Sleep mode off:             0x00
+           on:              0x01
+
+
+The checksum is calculated exactly the same way as it's done for the heartbeat messages. I've included a hvac.mqtt template for Home Assistant that is able to read heartbeat messages from the AC, as well as send commands to it. 
+
+
 For celsius, the ambient temperature and set temperature values start at 10. For the set temperature, 10 = 16°C, and increases with the temperature, i.e. 11 = 17°C, 12 = 13°C, etc. These are hex values.
 
 I've made a little jig to connect to AC to an ESP32 flashed with Tasmota. All command attempts were made with SerialSend5. Used a logic level shifter as the AC UART is 5v.
