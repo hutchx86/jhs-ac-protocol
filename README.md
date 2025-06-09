@@ -44,6 +44,7 @@ Power:              0x11
 Mode:               0x12
 Sleep:              0x13
 Set temperature:    0x14
+Oscilation          0x15
 Fan speed:          0x16
 
 To interact with these functions, bytes 3 and 4 need to match each other. The following is a table of their possible values:
@@ -65,6 +66,9 @@ To interact with these functions, bytes 3 and 4 need to match each other. The fo
 | FAN SPEED CONTROL                                                     |
 | Fan low                     | 0x01                                    |
 | Fan high                    | 0x03                                    |
+| OSCILATION CONTROL          |                                         |
+| Oscilation off              | 0x00                                    |
+| Oscilation on               | 0x01                                    |
 
 The checksum is calculated exactly the same way as it's done for the heartbeat messages. I've included a hvac.mqtt template for Home Assistant that is able to read heartbeat messages from the AC, as well as send commands to it. 
 
